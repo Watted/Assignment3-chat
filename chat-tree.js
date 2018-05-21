@@ -37,6 +37,15 @@ function ChatTree(element) {
 
     }
 
+    function hiddenChildren(items) {
+        if (items) {
+            for (item of items) {
+                item.addClass('hidden');
+                hiddenChildren($(item).data('children'));
+            }
+        }
+    }
+
     function clearMarks() {
         let item = $('.mark');
         $(item).removeClass('mark');
@@ -52,15 +61,6 @@ function ChatTree(element) {
                     item.toggleClass('hidden');
                     hiddenChildren($(item).data('children'));
                 }
-            }
-        }
-    }
-
-    function hiddenChildren(items) {
-        if (items) {
-            for (item of items) {
-                item.addClass('hidden');
-                hiddenChildren($(item).data('children'));
             }
         }
     }
@@ -82,6 +82,26 @@ function ChatTree(element) {
             case 'Enter':
                 enter();
                 break;
+        }
+    }
+
+    function arrowLeft(){
+        let parent = $(element).find('.mark');
+        let children = $(parent).data('children');
+
+        if(parent.length !== 0) {
+            if (!children || children[0].hasClass('hidden')) {
+                if ($(parent).data('parent')) {
+                    clearMarks();
+                    $(parent).data('parent').addClass('mark');
+                }
+            }
+            else {
+                for (item of children) {
+                    item.addClass('hidden');
+                    hiddenChildren($(item).data('children'));
+                }
+            }
         }
     }
 
@@ -112,21 +132,23 @@ function ChatTree(element) {
         }
     }
 
-    function arrowLeft(){
-        let parent = $(element).find('.mark');
-        let children = $(parent).data('children');
+    function arrowDown(){
+        let node = $(element).find('.mark');
+        if(node.length === 0)
+            $($(element).find('li')[0]).addClass('mark');
+        else {
+            let arrayOfLis =  $(element).find('li');
+            let i = 0;
 
-        if(parent.length !== 0) {
-            if (!children || children[0].hasClass('hidden')) {
-                if ($(parent).data('parent')) {
-                    clearMarks();
-                    $(parent).data('parent').addClass('mark');
-                }
+            for( ; i <arrayOfLis.length ; i++){
+                if($(arrayOfLis[i]).text() === node.text())
+                    break;
             }
-            else {
-                for (item of children) {
-                    item.addClass('hidden');
-                    hiddenChildren($(item).data('children'));
+            for(++i ; i<arrayOfLis.length ; i++){
+                if($(arrayOfLis[i]).hasClass('hidden') === false){
+                    clearMarks();
+                    $(arrayOfLis[i]).addClass('mark');
+                    break;
                 }
             }
         }
@@ -143,28 +165,6 @@ function ChatTree(element) {
                     break;
             }
             for( --i ; i>=0 ; i--){
-                if($(arrayOfLis[i]).hasClass('hidden') === false){
-                    clearMarks();
-                    $(arrayOfLis[i]).addClass('mark');
-                    break;
-                }
-            }
-        }
-    }
-
-    function arrowDown(){
-        let node = $(element).find('.mark');
-        if(node.length === 0)
-            $($(element).find('li')[0]).addClass('mark');
-        else {
-            let arrayOfLis =  $(element).find('li');
-            let i = 0;
-
-            for( ; i <arrayOfLis.length ; i++){
-                if($(arrayOfLis[i]).text() === node.text())
-                    break;
-            }
-            for(++i ; i<arrayOfLis.length ; i++){
                 if($(arrayOfLis[i]).hasClass('hidden') === false){
                     clearMarks();
                     $(arrayOfLis[i]).addClass('mark');
